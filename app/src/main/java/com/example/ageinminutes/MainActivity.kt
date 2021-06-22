@@ -3,7 +3,6 @@ package com.example.ageinminutes
 import android.app.DatePickerDialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import android.widget.Toast
 import com.example.ageinminutes.databinding.ActivityMainBinding
 import java.text.SimpleDateFormat
@@ -18,14 +17,18 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        initViews()
+    }
+
+    private fun initViews() {
         binding.btnDatePicker.setOnClickListener { view ->
-            // On click pass view to the function
-            clickDatePicker(view)
+            // On click pass the view to the function
+            showDatePicker()
         }
     }
 
     // Main logic function
-    private fun clickDatePicker(view: View) {
+    private fun showDatePicker() {
         // Create instance of calendar
         val myCalendar = Calendar.getInstance()
 
@@ -35,34 +38,35 @@ class MainActivity : AppCompatActivity() {
         val month = myCalendar.get(Calendar.MONTH)
         val dayOfMonth = myCalendar.get(Calendar.DAY_OF_MONTH)
 
-        // Create DatePickedDialog and save it to dpd
-        val dpd = DatePickerDialog(this, // Values which comes as input from the date picked dialog
-            DatePickerDialog.OnDateSetListener { _, selectedYear, selectedMonth, selectedDayOfMonth ->
-                // TODO: Implement the logic
+        // Create DatePickedDialog
+        DatePickerDialog(this,
+            // Values which comes as input from the date picked dialog
+            { _, selectedYear, selectedMonth, selectedDayOfMonth ->
                 val selectedDate = "$selectedDayOfMonth/${selectedMonth + 1}/$selectedYear"
                 binding.tvSelectedDate.text = selectedDate
 
-                val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH)
-                val theDate = sdf.parse(selectedDate)
+                val dateFormatter = SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH)
+                val theDate = dateFormatter.parse(selectedDate) ?: return@DatePickerDialog
 
                 try {
-                    val selectedDateInMinutes = theDate!!.time / 60000
-                    val currentDate = sdf.parse(sdf.format(System.currentTimeMillis()))
-                    val currentDateToMinutes = currentDate!!.time / 60000
+                    val selectedDateInMinutes = theDate.time / 60000
+                    val currentDate =
+                        dateFormatter.parse(dateFormatter.format(System.currentTimeMillis()))
+                    val currentDateToMinutes = currentDate.time / 60000
                     val differenceInMinutes = currentDateToMinutes - selectedDateInMinutes
                     binding.tvSelectedDateInMinutes.text = differenceInMinutes.toString()
-
-                }catch (e: IllegalStateException){
-                        Toast.makeText(this, "Skip this operation", Toast.LENGTH_SHORT).show()
+                } catch (e: IllegalStateException) {
+                    Toast.makeText(this, "Skip this operation", Toast.LENGTH_SHORT).show()
                 }
 
             }
             // Pass the default info
             , year, month, dayOfMonth)
-
-        // Restrict the maxDate to current date - day before
-        dpd.datePicker.maxDate = Date().time - 86400000
-        // show the result
-        dpd.show()
+            .apply {
+                // Restrict the maxDate to current date - day before
+                datePicker.maxDate = Date().time - 86400000
+                // show the result
+                show()
+            }
     }
 }
