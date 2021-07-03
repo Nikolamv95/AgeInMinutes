@@ -1,10 +1,9 @@
-## Table of contents
-* General info
+# AgeInMinutes App
+App which calculates the time between the current date and your birthday.
+
+## ℹ️ Table of contents
 * Tech Stack
 * App View
-
-## ℹ️ General info
-App which calculates the time between the current date and your birthday.
 	
 ## 💻 Tech Stack
 Project is created with:
@@ -12,7 +11,7 @@ Project is created with:
 * Kotlin
 * Android
 
-## App View
+## 📲 App View
 
 ### Main Activity UI
 
